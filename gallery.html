@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday, Chandana!</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #191970; /* Midnight blue base */
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow-y: auto;
+            transition: background 1s ease;
+        }
+
+        body.party-mode {
+            background: linear-gradient(45deg, #191970, #ccff00);
+        }
+
+        .gallery-container {
+            max-width: 100%;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: clamp(2em, 8vw, 3.5em);
+            font-weight: 700;
+            color: #ccff00; /* Electric lime */
+            text-shadow: 0 0 20px #ccff00;
+            margin-bottom: 20px;
+            animation: titleBounce 2s infinite ease-in-out;
+        }
+
+        .photo-orbit {
+            position: relative;
+            margin-bottom: 40px;
+            height: 300px;
+        }
+
+        .photo-card {
+            position: absolute;
+            width: 150px;
+            height: 200px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(204, 255, 0, 0.7);
+            transition: transform 0.5s ease, opacity 0.5s ease;
+            cursor: pointer;
+            animation: orbit 10s infinite linear;
+        }
+
+        .photo-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .photo-card:nth-child(1) { left: 25%; top: 50%; transform: translate(-50%, -50%); animation-delay: 0s; }
+        .photo-card:nth-child(2) { left: 50%; top: 50%; transform: translate(-50%, -50%); animation-delay: -3.33s; }
+        .photo-card:nth-child(3) { left: 75%; top: 50%; transform: translate(-50%, -50%); animation-delay: -6.66s; }
+
+        .photo-card:hover {
+            transform: scale(1.1) translate(-50%, -50%);
+            box-shadow: 0 0 30px #191970; /* Midnight blue glow */
+            z-index: 3;
+        }
+
+        .photo-card.active {
+            animation: none;
+            transform: translate(-50%, -50%) scale(1.5);
+            opacity: 1;
+            z-index: 4;
+        }
+
+        .party-zone {
+            margin: 0 auto;
+            text-align: center;
+            position: relative;
+            max-width: 400px;
+        }
+
+        .party-btn {
+            padding: 15px 40px;
+            font-size: clamp(1.2em, 4vw, 2em);
+            color: #191970;
+            background: #ccff00;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: transform 0.3s ease, background 0.3s ease;
+            animation: btnPulse 1.5s infinite ease-in-out;
+        }
+
+        .party-btn:hover {
+            background: #191970;
+            color: #ccff00;
+            box-shadow: 0 0 20px #ccff00;
+        }
+
+        .party-btn.active {
+            transform: scale(0);
+            opacity: 0;
+        }
+
+        .party-effects {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            display: none;
+            z-index: 10;
+        }
+
+        .balloon {
+            position: absolute;
+            width: 50px;
+            height: 70px;
+            background: radial-gradient(circle at 30% 30%, #fff, transparent);
+            border-radius: 50%;
+            animation: balloonPop 2s ease-out forwards;
+        }
+
+        .balloon:nth-child(1) { left: 15%; background-color: #ccff00; animation-delay: 0s; }
+        .balloon:nth-child(2) { left: 35%; background-color: #191970; animation-delay: 0.2s; }
+        .balloon:nth-child(3) { left: 55%; background-color: #ccff00; animation-delay: 0.4s; }
+        .balloon:nth-child(4) { left: 75%; background-color: #191970; animation-delay: 0.6s; }
+        .balloon:nth-child(5) { left: 95%; background-color: #ccff00; animation-delay: 0.8s; }
+
+        .candle {
+            position: absolute;
+            width: 20px;
+            height: 60px;
+            background: #fff;
+            border-radius: 5px;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            transition: top 0.5s ease, opacity 0.5s ease;
+        }
+
+        .candle::before {
+            content: '';
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 10px;
+            height: 15px;
+            background: radial-gradient(circle, #ccff00, transparent);
+            border-radius: 50%;
+            animation: flicker 0.2s infinite alternate;
+        }
+
+        .candle.drop {
+            top: 50%;
+        }
+
+        .candle.blown {
+            opacity: 0;
+        }
+
+        .candle:nth-child(6) { left: 45%; }
+        .candle:nth-child(7) { left: 50%; }
+        .candle:nth-child(8) { left: 55%; }
+
+        .blast-particle {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background: #ccff00;
+            border-radius: 50%;
+            animation: particleBlast 1.5s ease-out forwards;
+        }
+
+        .light-flash {
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle, rgba(204, 255, 0, 0.5), transparent);
+            border-radius: 50%;
+            animation: lightFlash 3s ease-in-out infinite;
+            opacity: 0.3;
+        }
+
+        .light-flash:nth-child(9) { left: 20%; top: 30%; animation-delay: 0s; }
+        .light-flash:nth-child(10) { left: 60%; top: 40%; background: radial-gradient(circle, rgba(25, 25, 112, 0.5), transparent); animation-delay: 0.5s; }
+        .light-flash:nth-child(11) { left: 40%; top: 70%; animation-delay: 1s; }
+
+        .special-wish {
+            background: rgba(25, 25, 112, 0.8);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 40px rgba(204, 255, 0, 0.6);
+            margin: 20px auto;
+            max-width: 500px;
+        }
+
+        .wish-item {
+            font-size: clamp(1.2em, 4vw, 1.8em);
+            color: #fff;
+            font-style: italic;
+            text-shadow: 0 0 10px #ccff00;
+            margin-bottom: 15px;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        .wish-item.active {
+            opacity: 1;
+            transform: translateY(0);
+            animation: wishGlow 2s infinite ease-in-out;
+        }
+
+        .bg-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 5;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .zoom-image {
+            max-width: 90%;
+            max-height: 90vh;
+            border-radius: 10px;
+            box-shadow: 0 0 25px #ccff00;
+        }
+
+        @keyframes titleBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes orbit {
+            0% { transform: translate(-50%, -50%) rotate(0deg) translateX(100px) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg) translateX(100px) rotate(-360deg); }
+        }
+
+        @keyframes btnPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes balloonPop {
+            0% { transform: translateY(50%) scale(0); opacity: 0; }
+            50% { transform: translateY(0) scale(1.2); opacity: 1; }
+            100% { transform: translateY(-100px) scale(1); opacity: 0; }
+        }
+
+        @keyframes flicker {
+            0% { transform: translateX(-50%) scale(1); }
+            100% { transform: translateX(-50%) scale(1.1); }
+        }
+
+        @keyframes particleBlast {
+            0% { transform: scale(0) translate(0, 0); opacity: 1; }
+            100% { transform: scale(1.5) translate(var(--dx), var(--dy)); opacity: 0; }
+        }
+
+        @keyframes lightFlash {
+            0% { transform: scale(1); opacity: 0.3; }
+            50% { transform: scale(1.2); opacity: 0.6; }
+            100% { transform: scale(1); opacity: 0.3; }
+        }
+
+        @keyframes wishGlow {
+            0% { text-shadow: 0 0 10px #ccff00; }
+            50% { text-shadow: 0 0 20px #191970; }
+            100% { text-shadow: 0 0 10px #ccff00; }
+        }
+
+        @media (max-width: 600px) {
+            .photo-orbit {
+                height: 250px;
+            }
+
+            .photo-card {
+                width: 120px;
+                height: 160px;
+            }
+
+            .photo-card:nth-child(1) { animation: orbit 8s infinite linear; }
+            .photo-card:nth-child(2) { animation-delay: -2.66s; }
+            .photo-card:nth-child(3) { animation-delay: -5.33s; }
+
+            @keyframes orbit {
+                0% { transform: translate(-50%, -50%) rotate(0deg) translateX(80px) rotate(0deg); }
+                100% { transform: translate(-50%, -50%) rotate(360deg) translateX(80px) rotate(-360deg); }
+            }
+
+            .party-btn {
+                padding: 10px 30px;
+            }
+
+            .balloon {
+                width: 40px;
+                height: 55px;
+            }
+
+            .candle {
+                width: 15px;
+                height: 45px;
+            }
+
+            .candle::before {
+                width: 8px;
+                height: 12px;
+                top: -12px;
+            }
+
+            .blast-particle {
+                width: 10px;
+                height: 10px;
+            }
+
+            .light-flash {
+                width: 100px;
+                height: 100px;
+            }
+
+            .special-wish {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="gallery-container">
+        <h2>Happy Birthday, Chandana!</h2>
+        <div class="photo-orbit" id="photoOrbit">
+            <div class="photo-card">
+                <img src="friend-photo1.jpg.jpg" alt="Chandana Photo 1">
+            </div>
+            <div class="photo-card">
+                <img src="friend-photo2.jpg.jpg" alt="Chandana Photo 2">
+            </div>
+            <div class="photo-card">
+                <img src="friend-photo3.jpg.jpg" alt="Chandana Photo 3">
+            </div>
+        </div>
+        <div class="party-zone">
+            <button class="party-btn" id="partyBtn">Start the Party!</button>
+        </div>
+        <div class="special-wish" id="wishes">
+            <p class="wish-item">“Chandana, my awesome friend—hope your day’s full of joy and surprises!”</p>
+            <p class="wish-item">“To my bestie—here’s to more laughs and good times, happy birthday!”</p>
+        </div>
+    </div>
+    <div class="party-effects" id="partyEffects">
+        <div class="balloon"></div>
+        <div class="balloon"></div>
+        <div class="balloon"></div>
+        <div class="balloon"></div>
+        <div class="balloon"></div>
+        <div class="candle"></div>
+        <div class="candle"></div>
+        <div class="candle"></div>
+        <div class="light-flash"></div>
+        <div class="light-flash"></div>
+        <div class="light-flash"></div>
+    </div>
+    <div class="bg-overlay" id="zoomOverlay">
+        <img class="zoom-image" id="zoomImg" src="">
+    </div>
+
+    <audio id="partyBlast" src="happy-birthday-220024.mp3"></audio>
+
+    <script>
+        // Photo Zoom Functionality
+        const photoOrbit = document.getElementById('photoOrbit');
+        const overlay = document.getElementById('zoomOverlay');
+        const zoomImg = document.getElementById('zoomImg');
+        const photoCards = photoOrbit.querySelectorAll('.photo-card');
+
+        photoOrbit.addEventListener('click', (e) => {
+            const img = e.target.closest('img');
+            if (img && !partyBtn.classList.contains('active')) {
+                zoomImg.src = img.src;
+                overlay.style.display = 'flex';
+                photoCards.forEach(card => card.classList.add('active'));
+            }
+        });
+
+        overlay.addEventListener('click', () => {
+            overlay.style.display = 'none';
+            photoCards.forEach(card => card.classList.remove('active'));
+        });
+
+        // Party Button Trigger
+        const partyBtn = document.getElementById('partyBtn');
+        const partyEffects = document.getElementById('partyEffects');
+        const balloons = partyEffects.querySelectorAll('.balloon');
+        const candles = partyEffects.querySelectorAll('.candle');
+        const lights = partyEffects.querySelectorAll('.light-flash');
+        const wishes = document.getElementById('wishes').querySelectorAll('.wish-item');
+        const partyBlast = document.getElementById('partyBlast');
+
+        partyBtn.addEventListener('click', () => {
+            partyBtn.classList.add('active');
+            document.body.classList.add('party-mode');
+            partyEffects.style.display = 'block';
+            partyBlast.play().catch(() => console.log("Audio blocked—enable sound!"));
+
+            // Stop Photo Orbit and Spread (No Flip)
+            photoCards.forEach((card, index) => {
+                card.style.animation = 'none';
+                const angle = (index * 120 - 60) * (Math.PI / 180);
+                const radius = 150;
+                const dx = Math.cos(angle) * radius;
+                const dy = Math.sin(angle) * radius;
+                card.style.transform = `translate(${dx}px, ${dy}px) scale(1.2)`; // No rotate
+                card.style.transition = 'transform 1s ease-out';
+            });
+
+            // Balloons Pop Up
+            balloons.forEach(balloon => balloon.style.animationPlayState = 'running');
+
+            // Candles Drop In and Blow Out
+            candles.forEach((candle, index) => {
+                candle.classList.add('drop');
+                setTimeout(() => {
+                    candle.classList.add('blown');
+                    for (let i = 0; i < 20; i++) {
+                        const particle = document.createElement('div');
+                        particle.classList.add('blast-particle');
+                        const dx = (Math.random() - 0.5) * 120;
+                        const dy = (Math.random() - 0.5) * 120;
+                        particle.style.setProperty('--dx', `${dx}px`);
+                        particle.style.setProperty('--dy', `${dy}px`);
+                        particle.style.background = Math.random() > 0.5 ? '#ccff00' : '#191970';
+                        particle.style.left = `${50 + (index * 5 - 5)}%`;
+                        particle.style.top = '50%';
+                        partyEffects.appendChild(particle);
+                        setTimeout(() => particle.remove(), 1500);
+                    }
+                }, index * 500 + 1000);
+            });
+
+            // Lights Change
+            lights.forEach(light => light.style.animationPlayState = 'running');
+
+            // Activate Wishes
+            wishes.forEach((wish, index) => {
+                setTimeout(() => wish.classList.add('active'), index * 1000 + 2000);
+            });
+
+            setTimeout(() => {
+                partyBtn.classList.remove('active');
+                document.body.classList.remove('party-mode');
+                partyEffects.style.display = 'none';
+                photoCards.forEach((card, index) => {
+                    card.style.animation = 'orbit 10s infinite linear';
+                    card.style.transform = 'translate(-50%, -50%)';
+                    card.style.transition = 'none';
+                    card.style.animationDelay = `-${index * 3.33}s`;
+                });
+                candles.forEach(candle => {
+                    candle.classList.remove('drop');
+                    candle.classList.remove('blown');
+                });
+                balloons.forEach(balloon => balloon.style.animationPlayState = 'paused');
+                lights.forEach(light => light.style.animationPlayState = 'paused');
+            }, 6000);
+        });
+    </script>
+</body>
+</html>
